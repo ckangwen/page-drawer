@@ -1,0 +1,20 @@
+export const AtomicClassNames = [
+  "flex",
+  "dir-top",
+  "main-start",
+  "main-end",
+  "main-center",
+  "main-space",
+  "corss-start",
+  "corss-end",
+  "corss-center",
+  "corss-space",
+  "flex-stretch",
+  "flex-auto",
+  "w100",
+  "h100",
+  "text-center",
+  "text-left",
+  "m15",
+  "p15"
+];
