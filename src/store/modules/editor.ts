@@ -88,9 +88,10 @@ const mutations: MutationTree<EditorState> = {
   updateClass(state, { key, classNames }) {
     state.componentData[key].class = classNames;
   },
-  updateComponentName(state, { componentName, key }) {
+  updateComponentName(state, { componentName, key, templateName }) {
     if (!key) key = state.currentUuid;
     state.componentData[key].componentName = componentName;
+    state.componentData[key].templateName = templateName;
   },
   setCurrentUuid(state, id) {
     state.currentUuid = id;

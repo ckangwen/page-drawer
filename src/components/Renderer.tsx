@@ -12,6 +12,7 @@ import {
 } from "../store/type";
 import styles from "./renderer.module.scss";
 import { ROOT_ID } from "@/libs";
+import { renderJSXToString } from '../libs/renderJSXToString';
 
 type Props = {
   keys: TreeKey[];
@@ -23,8 +24,9 @@ export default defineComponent({
     keys: Array
   },
   setup(props: Props) {
-    const { componentData } = useNamespacedState<EditorState>("editor", [
-      "componentData"
+    const { componentData, mode } = useNamespacedState<EditorState>("editor", [
+      "componentData",
+      "mode"
     ]);
     const { setHoveredUuid, setCurrentUuid } = useNamespacedMutations<
       EditorMutation
@@ -33,19 +35,29 @@ export default defineComponent({
       "setWidgetDrawerVisible"
     ]);
 
+    const onClick = (e: MouseEvent, item: any) => {
+      e.stopPropagation();
+      if (mode.value === 'read') return
+      if (item?.id === ROOT_ID) return;
+      setCurrentUuid(item.id);
+    };
     const onDblclick = (e: MouseEvent, item: any) => {
       e.stopPropagation();
+      if (mode.value === 'read') return
       setWidgetDrawerVisible(true);
       setCurrentUuid(item.id);
     };
     const onMouseenter = (e: MouseEvent, item: any) => {
       e.stopPropagation();
+      if (mode.value === 'read') return
+
       const id = item.id;
       if (id === ROOT_ID) return;
       setHoveredUuid(id);
     };
     const onMouseleave = (e: MouseEvent, item: any) => {
       e.stopPropagation();
+      if (mode.value === 'read') return
       const id = item.id;
       if (id === ROOT_ID) return;
       setHoveredUuid("");
@@ -53,6 +65,7 @@ export default defineComponent({
 
     return {
       componentData,
+      onClick,
       onDblclick,
       onMouseenter,
       onMouseleave
@@ -89,6 +102,7 @@ export default defineComponent({
               id: node[k].id,
               "data-key": k
             }}
+            onClick={(e: MouseEvent) => this.onClick(e, node[k])}
             onDblclick={(e: MouseEvent) => this.onDblclick(e, node[k])}
             onMouseenter={(e: MouseEvent) => this.onMouseenter(e, node[k])}
             onMouseleave={(e: MouseEvent) => this.onMouseleave(e, node[k])}

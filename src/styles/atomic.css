@@ -73,3 +73,9 @@
   box-sizing: border-box;
   padding: 15px;
 }
+.h-auto {
+  height: auto;
+}
+.w-auto {
+  width: auto;
+}

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-drawer title="我是标题" :visible.sync="drawerVisible" direction="ltr">
+    <el-drawer title="我是标题" :visible="widgetDrawerVisible" @update:visible="onDrawerVisibleChange" direction="ltr">
       <div>
         <div
           v-for="(item, index) in list"
@@ -13,49 +13,110 @@
         </div>
       </div>
     </el-drawer>
+    <!-- code -->
+    <el-dialog
+      :visible="codeDialogVisible"
+      @update:visible="onCodeVisibleChange"
+      title="Code Edit"
+      width="70%"
+      @close="onCodeDialogClose"
+      @open="onCodeDialogOpen"
+    >
+      <Codemirror :code="code" @change="onCodeChange" />
+      <div class="code-bottom">
+        <el-button type="primary" style="width: 120px;">提交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
-<script>
-import widgetCenter from "@/libs/widgets";
+<script lang="ts">
+import Vue from "vue";
 import { defineComponent, ref, watch } from "@vue/composition-api";
 import {
   useNamespacedState,
   useNamespacedMutations
 } from "vuex-composition-helpers";
-import Vue from "vue";
+import SchemaForm from "@ckangwen/schema-form";
+
+import Codemirror from "@/components/Codemirror.vue";
+import widgetCenter from "@/libs/widgets";
+import { AppMutations, EditorMutation, EditorState } from "@/store/type";
+import { generateFormattedCode } from "@/libs";
 
 export default defineComponent({
   name: "Bottom",
+  components: {
+    SchemaForm,
+    Codemirror
+  },
   setup() {
-    const { currentUuid } = useNamespacedState("editor", ["currentUuid"]);
-    const { updateComponentName } = useNamespacedMutations("editor", [
-      "updateComponentName"
-    ]);
-    const { widgetDrawerVisible } = useNamespacedState("app", [
-      "widgetDrawerVisible"
+    const { currentUuid, componentData } = useNamespacedState<EditorState>(
+      "editor",
+      ["currentUuid", "componentData"]
+    );
+    const { updateComponentName } = useNamespacedMutations<EditorMutation>(
+      "editor",
+      ["updateComponentName", "updateClass", "updateStyle"]
+    );
+
+    const { codeDialogVisible, widgetDrawerVisible } = useNamespacedState(
+      "app",
+      ["codeDialogVisible", "widgetDrawerVisible"]
+    );
+
+    const { setCodeDialogVisible, setWidgetDrawerVisible } = useNamespacedMutations<AppMutations>("app", [
+      "setCodeDialogVisible",
+      "setWidgetDrawerVisible"
     ]);
 
-    const drawerVisible = ref(widgetDrawerVisible.value);
-    watch(widgetDrawerVisible, val => {
-      if (val) {
-        drawerVisible.value = true;
-      }
-    });
+    const onDrawerVisibleChange = (val: boolean) => {
+      setWidgetDrawerVisible(val)
+    }
     const list = widgetCenter.widgetList;
 
-    const onSelectWidget = item => {
+    const onSelectWidget = (item: any) => {
       updateComponentName({
         key: currentUuid.value,
-        componentName: item.template
+        componentName: item.template,
+        templateName: item.templateName
       });
-      drawerVisible.value = false;
+      setWidgetDrawerVisible(false)
       Vue.nextTick();
     };
 
+    /* code */
+    const code = ref("");
+    const onCodeVisibleChange = (val: boolean) => {
+      setCodeDialogVisible(val)
+    }
+    watch(codeDialogVisible, val => {
+      if (val) {
+        const codeStr = generateFormattedCode(componentData.value);
+        code.value = codeStr
+      }
+    });
+
+    const onCodeChange = (val: any) => {
+      code.value = val;
+    };
+    const onCodeDialogClose = () => {
+      setCodeDialogVisible(false);
+    };
+    const onCodeDialogOpen = () => {
+      //
+    };
+
     return {
-      drawerVisible,
+      widgetDrawerVisible,
+      onDrawerVisibleChange,
       list,
-      onSelectWidget
+      onSelectWidget,
+      code,
+      codeDialogVisible,
+      onCodeVisibleChange,
+      onCodeChange,
+      onCodeDialogClose,
+      onCodeDialogOpen
     };
   }
 });
@@ -70,5 +131,8 @@ export default defineComponent({
   &:hover {
     background: rgb(0 0 0 / 10%);
   }
+}
+.code-bottom {
+  margin-top: 10px;
 }
 </style>

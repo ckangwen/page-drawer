@@ -1,15 +1,5 @@
 <template>
-  <el-main>
-    <div class="header">
-      <el-form inline size="small">
-        <el-form-item label="width">
-          <el-input style="width: 100px" v-model="canvasSize.width"></el-input>
-        </el-form-item>
-        <el-form-item label="height">
-          <el-input style="width: 100px" v-model="canvasSize.height"></el-input>
-        </el-form-item>
-      </el-form>
-    </div>
+  <el-main style="padding-top: 0;">
     <div
       ref="containerEl"
       class="draw-content"
@@ -23,59 +13,21 @@
       <div class="area-selector" ref="selector"></div>
       <Renderer :keys="[ROOT_ID]" />
     </div>
-
-    <div class="btn"></div>
-
-    <el-dialog
-      :visible.sync="styleVisible"
-      title="Style Edit"
-      width="70%"
-      @close="onDialogClose"
-      @open="onDialogOpen"
-    >
-      <schema-form
-        :formProps="{ 'label-position': 'top' }"
-        v-model="schemaFormValue"
-        :schema="schema"
-        :widgets="schemaFormWidgets"
-      ></schema-form>
-      <el-button type="primary" @click="onCancal">取消</el-button>
-      <el-button type="primary" @click="submitForm">提交</el-button>
-    </el-dialog>
   </el-main>
 </template>
 <script lang="ts">
-import {
-  AppMutations,
-  AppState,
-  EditorMutation,
-  EditorState
-} from "@/store/type";
-import { defineComponent, ref, watch } from "@vue/composition-api";
+import { AppState, EditorMutation, EditorState } from "@/store/type";
+import { defineComponent, ref } from "@vue/composition-api";
 import shortid from "shortid";
 import {
-  useNamespacedGetters,
   useNamespacedMutations,
   useNamespacedState
 } from "vuex-composition-helpers";
 import Renderer from "@/components/Renderer";
 import SchemaForm from "@ckangwen/schema-form";
 import StyleFormWidget from "@/components/StyleFormWidget.vue";
-import { AtomicClassNames, ROOT_ID as _ROOT_ID } from "@/libs";
-
-const COLORS = [
-  "#5237D8",
-  "#46BD6F",
-  "#AF4A86",
-  "#FF8C00",
-  "#EE3A8C",
-  "#8470FF",
-  "#FFD700",
-  "#7D26CD",
-  "#7FFFD4",
-  "#008B8B"
-];
-
+import { ROOT_ID as _ROOT_ID } from "@/libs";
+import randomColor from "randomcolor";
 export default defineComponent({
   name: "AppMain",
   components: {
@@ -85,29 +37,15 @@ export default defineComponent({
   },
   setup() {
     const { mode } = useNamespacedState<EditorState>("editor", ["mode"]);
-    const { currentComponent } = useNamespacedGetters("editor", [
-      "currentComponent"
-    ]);
-    const { stylePanelVisible } = useNamespacedState<AppState>("app", [
-      "stylePanelVisible"
-    ]);
-    const { setStylePanelVisible } = useNamespacedMutations<AppMutations>(
+    const { stylePanelVisible, canvasSize } = useNamespacedState<AppState>(
       "app",
-      ["setStylePanelVisible"]
+      ["stylePanelVisible", "canvasSize"]
     );
-
-    const styleVisible = ref(stylePanelVisible.value);
-    watch(stylePanelVisible, val => {
-      styleVisible.value = val;
-    });
 
     const {
       addChildren,
       addComponent,
-      setCurrentUuid,
-      updateClass,
-      updateStyle,
-      deleteComponent
+      setCurrentUuid
     } = useNamespacedMutations<EditorMutation>("editor", [
       "addChildren",
       "addComponent",
@@ -118,11 +56,6 @@ export default defineComponent({
     ]);
 
     const ROOT_ID = ref(_ROOT_ID);
-    const canvasSize = ref({
-      width: "100%",
-      height: "100%"
-    });
-    const currentUuid = ref("");
     let isDragging = false;
     const startClient = ref({
       x: 0,
@@ -225,18 +158,16 @@ export default defineComponent({
         parentId: ""
       };
 
-      const uuid = isFirstDraw.value ? "0" : shortid.generate();
-      currentUuid.value = uuid;
+      const uuid = shortid.generate();
       setCurrentUuid(uuid);
       domInfo.id = uuid;
 
-      const randomIndex = Math.floor(Math.random() * 10);
       const key = container?.id || _ROOT_ID;
 
       domInfo.style = {
         width: `${width}px`,
         height: `${height}px`,
-        background: COLORS[randomIndex]
+        background: randomColor()
       };
 
       addComponent({
@@ -250,63 +181,6 @@ export default defineComponent({
       });
 
       clearDrawState();
-      setStylePanelVisible(true);
-    };
-
-    const schema = ref({
-      class: {
-        title: "ClassName",
-        type: "array",
-        "ui-widget": "select",
-        enums: AtomicClassNames
-      },
-      style: {
-        title: "Style",
-        type: "style"
-      }
-    });
-    const schemaFormValue = ref({
-      class: [],
-      style: {}
-    });
-    const schemaFormWidgets = {
-      style: StyleFormWidget
-    };
-    const submitForm = () => {
-      const val = schemaFormValue.value;
-      if (currentUuid.value && val) {
-        if (val.class && val.class.length > 0) {
-          updateClass({
-            key: currentUuid.value,
-            classNames: val.class
-          });
-        }
-        if (val.style) {
-          updateStyle({
-            key: currentUuid.value,
-            style: val.style
-          });
-        }
-      }
-
-      setStylePanelVisible(false);
-    };
-
-    const onCancal = () => {
-      clearDrawState();
-      deleteComponent({
-        key: currentUuid.value
-      });
-    };
-    const onDialogClose = () => {
-      schemaFormValue.value = {
-        class: [],
-        style: {}
-      };
-      setStylePanelVisible(false);
-    };
-    const onDialogOpen = () => {
-      schemaFormValue.value = currentComponent.value.style;
     };
 
     return {
@@ -317,18 +191,8 @@ export default defineComponent({
       onDragMove,
       onDragEnd,
 
-      styleVisible,
       stylePanelVisible,
-      canvasSize,
-
-      schema,
-      schemaFormValue,
-      schemaFormWidgets,
-      submitForm,
-
-      onCancal,
-      onDialogClose,
-      onDialogOpen
+      canvasSize
     };
   }
 });

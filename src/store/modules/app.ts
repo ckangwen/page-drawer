@@ -1,9 +1,16 @@
 import { AppState } from "../type";
 import { MutationTree } from "vuex";
+import { TABNAMES } from "@/libs";
 
 const state: AppState = {
   stylePanelVisible: false,
-  widgetDrawerVisible: false
+  widgetDrawerVisible: false,
+  codeDialogVisible: false,
+  activeTabName: TABNAMES["STYLE"],
+  canvasSize: {
+    width: "100%",
+    height: "100%"
+  }
 };
 
 const mutations: MutationTree<AppState> = {
@@ -12,6 +19,15 @@ const mutations: MutationTree<AppState> = {
   },
   setWidgetDrawerVisible(state, visible) {
     state.widgetDrawerVisible = visible;
+  },
+  setCodeDialogVisible(state, visible) {
+    state.codeDialogVisible = visible;
+  },
+  setActiveTabName(state, name) {
+    state.activeTabName = name;
+  },
+  setCanvasSize(state, size) {
+    state.canvasSize = size;
   }
 };
 

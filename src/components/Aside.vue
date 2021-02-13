@@ -45,7 +45,6 @@
 
     <ContextMenu ref="contextmenu">
       <li class="contextmenu-item" @click="deleteNode">删除</li>
-      <li class="contextmenu-item" @click="editStyle">修改样式</li>
     </ContextMenu>
   </el-aside>
 </template>
@@ -70,9 +69,6 @@ export default defineComponent({
     const { mode, componentData, currentUuid } = useNamespacedState<
       EditorState
     >("editor", ["mode", "componentData", "currentUuid"]);
-    const { setStylePanelVisible } = useNamespacedMutations("app", [
-      "setStylePanelVisible"
-    ]);
     const {
       setEditorMode,
       setCurrentUuid,
@@ -95,20 +91,8 @@ export default defineComponent({
       { immediate: true }
     );
     const tree = computed(() => {
-      console.log(componentData.value);
       return transformToTree(componentData.value, [ROOT_ID]);
     });
-    // const tree = ref({});
-    // watch(
-    //   componentData,
-    //   val => {
-    //     if (val) {
-    //       tree.value = transformToTree(val, [ROOT_ID]);
-    //     }
-    //     Vue.nextTick();
-    //   },
-    //   { immediate: true }
-    // );
     const renderContent = (h: CreateElement, { node }: any) => {
       return h("div", {}, [node.data.id]);
     };
@@ -134,9 +118,6 @@ export default defineComponent({
       });
       Vue.nextTick();
     };
-    const editStyle = () => {
-      setStylePanelVisible(true);
-    };
 
     return {
       stateIcon,
@@ -147,15 +128,14 @@ export default defineComponent({
       tree,
       contextmenu,
       onTreeNodeContextmenu,
-      deleteNode,
-      editStyle
+      deleteNode
     };
   }
 });
 </script>
 <style lang="scss" scoped>
 .aside {
-  height: 100vh;
+  height: calc(100vh - 60px);
 
   .trigger {
     display: inline-block;
@@ -164,10 +144,13 @@ export default defineComponent({
     line-height: 40px;
     text-align: center;
     cursor: pointer;
+    background: #f5f7fa;
+    border: 1px solid #dcdfe6;
+    box-sizing: border-box;
   }
   .tab {
     border: 0;
-    height: calc(100vh - 40px);
+    height: calc(100vh - 100px);
     box-shadow: none;
   }
 }

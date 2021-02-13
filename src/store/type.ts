@@ -1,4 +1,5 @@
 import { ActionContext } from "vuex";
+import { TABNAMES } from "@/libs";
 
 // Others
 export type EditorMode = "read" | "edit";
@@ -12,6 +13,8 @@ export interface NodeDeclaration {
   children: TreeKey[];
   componentName: (() => JSX.Element) | string;
   parentId: string;
+  templateName?: string;
+  componentProps?: Record<string, any>;
 }
 // State
 export type RootState = {};
@@ -19,6 +22,9 @@ export type RootState = {};
 export type AppState = {
   stylePanelVisible: boolean;
   widgetDrawerVisible: boolean;
+  codeDialogVisible: boolean;
+  activeTabName: TABNAMES;
+  canvasSize: Record<"width" | "height", string>;
 };
 
 export type EditorState = {
@@ -56,8 +62,13 @@ export type EditorMutation = {
     state: EditorState,
     {
       componentName,
-      key
-    }: { componentName: NodeDeclaration["componentName"]; key?: TreeKey }
+      key,
+      templateName
+    }: {
+      componentName: NodeDeclaration["componentName"];
+      key?: TreeKey;
+      templateName: string;
+    }
   ) => void;
   setCurrentUuid: (state: EditorState, id: string) => void;
   setHoveredUuid: (state: EditorState, id: string) => void;
@@ -68,6 +79,12 @@ export type EditorMutation = {
 export type AppMutations = {
   setStylePanelVisible: (state: AppState, visible: boolean) => void;
   setWidgetDrawerVisible: (state: AppState, visible: boolean) => void;
+  setCodeDialogVisible: (state: AppState, visible: boolean) => void;
+  setActiveTabName: (state: AppState, name: TABNAMES) => void;
+  setCanvasSize: (
+    state: AppState,
+    size: Record<"width" | "height", string>
+  ) => void;
 };
 
 // Actions

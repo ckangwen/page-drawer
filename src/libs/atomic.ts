@@ -16,5 +16,7 @@ export const AtomicClassNames = [
   "text-center",
   "text-left",
   "m15",
-  "p15"
+  "p15",
+  "h-auto",
+  "w-auto"
 ];
