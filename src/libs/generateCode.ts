@@ -2,11 +2,12 @@ import HTMLPrettier from "prettier/esm/standalone";
 import HTMLPlugin from "prettier/esm/parser-html.mjs";
 
 import { NodeDeclaration, TreeKey } from "../store/type";
-import { ROOT_ID } from "./helper";
+import { ROOT_ID, isHTMLTag } from './helper';
 import { renderJSXToString } from './renderJSXToString';
+import widgetCenter from './widgets/index';
 
 type NodeTree = {
-  componentName: string | (() => JSX.Element);
+  componentName: string;
   className: string;
   style: string;
   props?: string;
@@ -38,8 +39,9 @@ function generateCode(data: NodeTree[]) {
   let code = "";
   data.forEach(item => {
     const { componentName, className, style, children = [] } = item;
-    if (componentName && typeof componentName !== 'string') {
-      const jsxCode = renderJSXToString(componentName)
+    if (componentName && !isHTMLTag(componentName)) {
+      const Component = widgetCenter.get(componentName).template || 'div'
+      const jsxCode = renderJSXToString(Component)
       code += '\n' + jsxCode
       return
     }

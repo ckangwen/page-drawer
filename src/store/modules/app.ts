@@ -6,6 +6,7 @@ const state: AppState = {
   stylePanelVisible: false,
   widgetDrawerVisible: false,
   codeDialogVisible: false,
+  codeActionType: '',
   activeTabName: TABNAMES["STYLE"],
   canvasSize: {
     width: "100%",
@@ -20,8 +21,9 @@ const mutations: MutationTree<AppState> = {
   setWidgetDrawerVisible(state, visible) {
     state.widgetDrawerVisible = visible;
   },
-  setCodeDialogVisible(state, visible) {
+  setCodeDialogVisible(state, { visible, action = '' }) {
     state.codeDialogVisible = visible;
+    state.codeActionType = action
   },
   setActiveTabName(state, name) {
     state.activeTabName = name;

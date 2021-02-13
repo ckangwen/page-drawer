@@ -12,7 +12,8 @@ import {
 } from "../store/type";
 import styles from "./renderer.module.scss";
 import { ROOT_ID } from "@/libs";
-import { renderJSXToString } from '../libs/renderJSXToString';
+import { isHTMLTag } from '../libs/helper';
+import widgetCenter from '../libs/widgets/index';
 
 type Props = {
   keys: TreeKey[];
@@ -82,7 +83,10 @@ export default defineComponent({
         if (!node[k]) return [] as any;
         const classNames = node[k].class;
         const style = node[k].style;
-        const ComponentName = node[k].componentName || "div";
+        let ComponentName: any = node[k].componentName || "div";
+        if(!isHTMLTag(ComponentName)) {
+          ComponentName = widgetCenter.get(ComponentName).template || "div"
+        }
         let children: VNode[] = [];
         const res = getNodes(node, node[k].children) || [];
         children = children.concat(res);

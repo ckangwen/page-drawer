@@ -9,6 +9,12 @@
       </el-form-item>
     </el-form>
     <div class="action">
+      <div class="action-item" @click="clear">
+        <span class="iconfont c-clear"></span>
+      </div>
+      <div class="action-item" @click="showStructure">
+        <span class="iconfont c-structure"></span>
+      </div>
       <div class="action-item" @click="showCode">
         <span class="iconfont c-code"></span>
       </div>
@@ -21,7 +27,7 @@ import {
   useNamespacedMutations,
   useNamespacedState
 } from "vuex-composition-helpers";
-import { AppMutations, AppState } from "../store/type";
+import { AppMutations, AppState, EditorMutation } from "../store/type";
 
 export default defineComponent({
   name: "AppHeader",
@@ -30,6 +36,9 @@ export default defineComponent({
     const { setCanvasSize, setCodeDialogVisible } = useNamespacedMutations<
       AppMutations
     >("app", ["setCanvasSize", "setCodeDialogVisible"]);
+    const {
+      clearComponentData
+    } = useNamespacedMutations<EditorMutation>('editor', ['clearComponentData'])
 
     const size = ref(canvasSize.value);
     watch(
@@ -41,12 +50,27 @@ export default defineComponent({
     );
 
     const showCode = () => {
-      setCodeDialogVisible(true);
+      setCodeDialogVisible({
+        visible: true,
+        action: 'code'
+      });
     };
+    const showStructure = () => {
+      setCodeDialogVisible({
+        visible: true,
+        action: 'structure'
+      });
+    }
+    const clear = () => {
+      clearComponentData()
+    }
+
 
     return {
       size,
-      showCode
+      showCode,
+      showStructure,
+      clear,
     };
   }
 });
@@ -59,6 +83,7 @@ export default defineComponent({
   height: 100%;
 }
 .action {
+  display: flex;
   .action-item {
     width: 60px;
     height: 60px;

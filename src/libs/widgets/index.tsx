@@ -16,6 +16,10 @@ class WidgetCenter {
     Vue.set(this.widgets, name, data);
     return this;
   }
+
+  get(name: string) {
+    return this.widgets[name]
+  }
 }
 
 const widgetCenter = new WidgetCenter();

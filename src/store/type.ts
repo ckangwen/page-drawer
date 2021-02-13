@@ -11,7 +11,7 @@ export interface NodeDeclaration {
   class: string[];
   style: Record<string, any>;
   children: TreeKey[];
-  componentName: (() => JSX.Element) | string;
+  componentName: string;
   parentId: string;
   templateName?: string;
   componentProps?: Record<string, any>;
@@ -23,6 +23,7 @@ export type AppState = {
   stylePanelVisible: boolean;
   widgetDrawerVisible: boolean;
   codeDialogVisible: boolean;
+  codeActionType: string;
   activeTabName: TABNAMES;
   canvasSize: Record<"width" | "height", string>;
 };
@@ -63,23 +64,22 @@ export type EditorMutation = {
     {
       componentName,
       key,
-      templateName
     }: {
       componentName: NodeDeclaration["componentName"];
       key?: TreeKey;
-      templateName: string;
     }
   ) => void;
   setCurrentUuid: (state: EditorState, id: string) => void;
   setHoveredUuid: (state: EditorState, id: string) => void;
   recordSnapshot: (state: EditorState) => void;
-  setComponentData: (state: EditorState, componentData: any[]) => void;
+  setComponentData: (state: EditorState, componentData: Record<TreeKey, NodeDeclaration>) => void;
+  clearComponentData: (state: EditorState) => void;
 };
 
 export type AppMutations = {
   setStylePanelVisible: (state: AppState, visible: boolean) => void;
   setWidgetDrawerVisible: (state: AppState, visible: boolean) => void;
-  setCodeDialogVisible: (state: AppState, visible: boolean) => void;
+  setCodeDialogVisible: (state: AppState, { visible, action }: { visible: boolean, action?: string }) => void;
   setActiveTabName: (state: AppState, name: TABNAMES) => void;
   setCanvasSize: (
     state: AppState,

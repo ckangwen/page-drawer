@@ -1,0 +1,61 @@
+{
+  "ROOT-ID": {
+    "id": "ROOT-ID",
+    "class": [],
+    "style": {
+      "width": "100%",
+      "height": "100%"
+    },
+    "children": [
+      "zH8y298QU"
+    ],
+    "componentName": "div",
+    "parentId": ""
+  },
+  "zH8y298QU": {
+    "id": "zH8y298QU",
+    "class": [
+      "flex",
+      "w100",
+      "h100"
+    ],
+    "style": {
+      "background": "#75f963"
+    },
+    "children": [
+      "6dPVkfcEX",
+      "oMkxKgnrw"
+    ],
+    "componentName": "div",
+    "parentId": "ROOT-ID"
+  },
+  "6dPVkfcEX": {
+    "id": "6dPVkfcEX",
+    "class": [
+      "flex",
+      "h100"
+    ],
+    "style": {
+      "width": "159px",
+      "background": "#21a58b"
+    },
+    "children": [],
+    "componentName": "div",
+    "parentId": "zH8y298QU"
+  },
+  "oMkxKgnrw": {
+    "id": "oMkxKgnrw",
+    "class": [
+      "flex",
+      "flex-stretch",
+      "h100"
+    ],
+    "style": {
+      "width": "249px",
+      "background": "#7097ea"
+    },
+    "children": [],
+    "componentName": "div",
+    "parentId": "zH8y298QU"
+  }
+}

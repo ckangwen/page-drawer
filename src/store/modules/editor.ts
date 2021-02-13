@@ -29,9 +29,8 @@ const deleteComponent = (
   return newData;
 };
 
-const state: EditorState = {
-  mode: "read",
-  componentData: {
+const getInitialComponentData = () => {
+  return {
     [ROOT_ID]: {
       id: ROOT_ID,
       class: [],
@@ -43,7 +42,11 @@ const state: EditorState = {
       componentName: "div",
       parentId: ""
     }
-  },
+  }
+}
+const state: EditorState = {
+  mode: "read",
+  componentData: getInitialComponentData(),
   currentComponent: null,
   currentUuid: "",
   hoveredUuid: "",
@@ -88,10 +91,9 @@ const mutations: MutationTree<EditorState> = {
   updateClass(state, { key, classNames }) {
     state.componentData[key].class = classNames;
   },
-  updateComponentName(state, { componentName, key, templateName }) {
+  updateComponentName(state, { componentName, key }) {
     if (!key) key = state.currentUuid;
     state.componentData[key].componentName = componentName;
-    state.componentData[key].templateName = templateName;
   },
   setCurrentUuid(state, id) {
     state.currentUuid = id;
@@ -99,7 +101,7 @@ const mutations: MutationTree<EditorState> = {
   setHoveredUuid(state, id) {
     state.hoveredUuid = id;
   },
-  setComponentData(state, componentData = []) {
+  setComponentData(state, componentData = {}) {
     Vue.set(state, "componentData", componentData);
   },
   recordSnapshot(state) {
@@ -108,6 +110,9 @@ const mutations: MutationTree<EditorState> = {
     if (state.snapshotIndex < state.snapshotData.length - 1) {
       state.snapshotData = state.snapshotData.slice(0, state.snapshotIndex + 1);
     }
+  },
+  clearComponentData() {
+    state.componentData = getInitialComponentData()
   }
 };
 

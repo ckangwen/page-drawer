@@ -94,8 +94,4 @@ export function renderJSXToString(
     const code = generateCode(tree);
     return code
   }
-  // return HTMLPrettier.format(code, {
-  //   parser: "html",
-  //   plugins: [HTMLPlugin]
-  // });
 }

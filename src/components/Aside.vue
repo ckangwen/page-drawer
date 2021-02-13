@@ -40,6 +40,17 @@
             <i class="iconfont c-template"></i>
           </el-tooltip>
         </span>
+        <div class="template-tab-content">
+          <div class="cell" v-for="(item) in LayoutTemplateList" :key="item.name" @click="selectTemplate(item)">
+            <span class="icon el-icon-help"></span>
+            <div>{{ item.title }}</div>
+          </div>
+          <div class="cell">
+            <input type="file" name="file" class="file-input" @change="onUploadTemplate">
+            <span class="icon iconfont c-plus"></span>
+            <div>添加模板</div>
+          </div>
+        </div>
       </el-tab-pane>
     </el-tabs>
 
@@ -58,6 +69,7 @@ import {
 import ContextMenu from "vue-context-menu";
 import { EditorMutation, EditorState } from "@/store/type";
 import { ROOT_ID, transformToTree } from "@/libs";
+import LayoutTemplates, { LayoutTemplateType } from '@/libs/layout-templates'
 import Vue from "vue";
 
 export default defineComponent({
@@ -72,24 +84,17 @@ export default defineComponent({
     const {
       setEditorMode,
       setCurrentUuid,
-      deleteComponent
+      deleteComponent,
+      setComponentData
     } = useNamespacedMutations<EditorMutation>("editor", [
       "setEditorMode",
+      "setComponentData",
       "setCurrentUuid",
       "deleteComponent",
       "updateStyle"
     ]);
     const width = ref(200);
     const tabName = ref("tree");
-    watch(
-      tabName,
-      val => {
-        if (val === "tree") {
-          width.value = 200;
-        }
-      },
-      { immediate: true }
-    );
     const tree = computed(() => {
       return transformToTree(componentData.value, [ROOT_ID]);
     });
@@ -119,6 +124,43 @@ export default defineComponent({
       Vue.nextTick();
     };
 
+
+    const list = Object.keys(LayoutTemplates).map(k => {
+      return {
+        name: k,
+        ...(LayoutTemplates[k])
+      }
+    })
+    const LayoutTemplateList = ref(list)
+    const selectTemplate = (item: LayoutTemplateType) => {
+      if (item.template) {
+        setComponentData(item.template)
+      }
+    }
+    const onUploadTemplate = (event: any) => {
+      const files = event.target.files
+      if (!files || !files.length) return
+
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        try {
+          const config = event.target ?  event.target.result : ''
+          // TODO check template
+          if (typeof config === 'string') {
+            LayoutTemplateList.value.push({
+              name: `upload${Date.now()}`,
+              title: 'upload',
+              template: JSON.parse(config) as any
+            })
+          }
+          return config
+        } catch (e) {
+          throw new Error(e)
+        }
+      }
+      reader.readAsText(files[0])
+    }
+
     return {
       stateIcon,
       triggleMode,
@@ -128,11 +170,19 @@ export default defineComponent({
       tree,
       contextmenu,
       onTreeNodeContextmenu,
-      deleteNode
+      deleteNode,
+      LayoutTemplateList,
+      selectTemplate,
+      onUploadTemplate
     };
   }
 });
 </script>
+<style>
+.el-tabs--border-card>.el-tabs__content {
+  padding: 10px !important;
+}
+</style>
 <style lang="scss" scoped>
 .aside {
   height: calc(100vh - 60px);
@@ -140,7 +190,7 @@ export default defineComponent({
   .trigger {
     display: inline-block;
     height: 40px;
-    width: 55px;
+    width: 57px;
     line-height: 40px;
     text-align: center;
     cursor: pointer;
@@ -152,6 +202,40 @@ export default defineComponent({
     border: 0;
     height: calc(100vh - 100px);
     box-shadow: none;
+  }
+}
+
+.template-tab-content {
+  display: flex;
+  flex-wrap: wrap;
+
+  .cell {
+    position: relative;
+    width: 50%;
+    padding: 10px 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+
+    .icon {
+      font-size: 25px;
+    }
+
+    &:hover {
+      background: #e2eaf3;
+      color: #409EFF;
+    }
+
+    .file-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
   }
 }
 

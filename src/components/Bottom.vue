@@ -22,15 +22,14 @@
       @close="onCodeDialogClose"
       @open="onCodeDialogOpen"
     >
-      <Codemirror :code="code" @change="onCodeChange" />
+      <Codemirror :code="code" :mode="mode" @change="onCodeChange" />
       <div class="code-bottom">
-        <el-button type="primary" style="width: 120px;">提交</el-button>
+        <el-button type="primary" style="width: 120px;" @click="downloadFile">下载</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script lang="ts">
-import Vue from "vue";
 import { defineComponent, ref, watch } from "@vue/composition-api";
 import {
   useNamespacedState,
@@ -40,8 +39,9 @@ import SchemaForm from "@ckangwen/schema-form";
 
 import Codemirror from "@/components/Codemirror.vue";
 import widgetCenter from "@/libs/widgets";
-import { AppMutations, EditorMutation, EditorState } from "@/store/type";
+import { AppMutations, AppState, EditorMutation, EditorState } from "@/store/type";
 import { generateFormattedCode } from "@/libs";
+import { saveAs } from 'file-saver'
 
 export default defineComponent({
   name: "Bottom",
@@ -59,9 +59,17 @@ export default defineComponent({
       ["updateComponentName", "updateClass", "updateStyle"]
     );
 
-    const { codeDialogVisible, widgetDrawerVisible } = useNamespacedState(
+    const {
+      codeDialogVisible,
+      widgetDrawerVisible,
+      codeActionType
+    } = useNamespacedState<AppState>(
       "app",
-      ["codeDialogVisible", "widgetDrawerVisible"]
+      [
+        "codeDialogVisible",
+        "widgetDrawerVisible",
+        "codeActionType"
+      ]
     );
 
     const { setCodeDialogVisible, setWidgetDrawerVisible } = useNamespacedMutations<AppMutations>("app", [
@@ -77,22 +85,30 @@ export default defineComponent({
     const onSelectWidget = (item: any) => {
       updateComponentName({
         key: currentUuid.value,
-        componentName: item.template,
-        templateName: item.templateName
+        componentName: item.name,
       });
       setWidgetDrawerVisible(false)
-      Vue.nextTick();
     };
 
     /* code */
     const code = ref("");
+    const mode = ref("text/x-vue")
     const onCodeVisibleChange = (val: boolean) => {
-      setCodeDialogVisible(val)
+      setCodeDialogVisible({
+        visible: val
+      })
     }
     watch(codeDialogVisible, val => {
       if (val) {
-        const codeStr = generateFormattedCode(componentData.value);
-        code.value = codeStr
+        if (codeActionType.value === 'code') {
+          mode.value = "text/x-vue"
+          const codeStr = generateFormattedCode(componentData.value);
+          code.value = codeStr
+        }
+        if (codeActionType.value === 'structure') {
+          mode.value = "application/json"
+          code.value = JSON.stringify(componentData.value, null, 2)
+        }
       }
     });
 
@@ -100,11 +116,22 @@ export default defineComponent({
       code.value = val;
     };
     const onCodeDialogClose = () => {
-      setCodeDialogVisible(false);
+      setCodeDialogVisible({
+        visible: false
+      });
     };
     const onCodeDialogOpen = () => {
       //
     };
+
+    const downloadFile = () => {
+      const blob = new Blob([code.value], { type: 'text/plain;charset=utf-8' })
+      let fileName = `${Date.now()}.vue`
+      if (codeActionType.value === 'structure') {
+        fileName = `${Date.now()}.json`
+      }
+      saveAs(blob, fileName)
+    }
 
     return {
       widgetDrawerVisible,
@@ -112,11 +139,13 @@ export default defineComponent({
       list,
       onSelectWidget,
       code,
+      mode,
       codeDialogVisible,
       onCodeVisibleChange,
       onCodeChange,
       onCodeDialogClose,
-      onCodeDialogOpen
+      onCodeDialogOpen,
+      downloadFile
     };
   }
 });
