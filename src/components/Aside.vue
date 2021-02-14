@@ -61,7 +61,7 @@
 </template>
 <script lang="ts">
 import { CreateElement } from "vue";
-import { computed, defineComponent, ref, watch } from "@vue/composition-api";
+import { computed, defineComponent, ref } from "@vue/composition-api";
 import {
   useNamespacedMutations,
   useNamespacedState

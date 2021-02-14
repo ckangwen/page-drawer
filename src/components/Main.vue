@@ -128,8 +128,6 @@ export default defineComponent({
       }
     };
 
-    const isFirstDraw = ref(false);
-
     const onDragEnd = (e: MouseEvent) => {
       e.stopPropagation();
       if (!isDragging) return;

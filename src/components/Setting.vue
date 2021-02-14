@@ -29,7 +29,8 @@ import {
   useNamespacedState
 } from "vuex-composition-helpers";
 import { AtomicClassNames } from "@/libs";
-import StyleFormWidget from "@/components/StyleFormWidget.vue";
+// import StyleFormWidget from "@/components/StyleFormWidget.vue";
+import StyleFormWidget from "@/components/StyleProperty/Style.vue";
 import { AppState, EditorMutation, EditorState } from "@/store/type";
 
 export default defineComponent({
