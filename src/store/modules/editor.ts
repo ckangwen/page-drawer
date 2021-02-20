@@ -38,6 +38,7 @@ const getInitialComponentData = () => {
         width: "100%",
         height: "100%"
       },
+      props: {},
       children: [],
       componentName: "div",
       parentId: ""
@@ -47,7 +48,6 @@ const getInitialComponentData = () => {
 const state: EditorState = {
   mode: "read",
   componentData: getInitialComponentData(),
-  currentComponent: null,
   currentUuid: "",
   hoveredUuid: "",
   snapshotData: [],
@@ -80,13 +80,23 @@ const mutations: MutationTree<EditorState> = {
 
     Vue.set(state, "componentData", newComponentData);
   },
-  updateStyle(state, { key, style }) {
+  updateStyle(state, { key, style = {} }) {
     if (!key) key = state.currentUuid;
 
     state.componentData[key].style = {
       ...state.componentData[key].style,
       ...style
     };
+  },
+  deleteStyleProperty(state, { key, prop }) {
+    Vue.delete(state.componentData[key].style, prop)
+  },
+  updateProps(state, { key, props = {} }) {
+    if (!key) key = state.currentUuid;
+
+    Object.keys(props).forEach(k => {
+      Vue.set(state.componentData[key].props, k, props[k])
+    })
   },
   updateClass(state, { key, classNames }) {
     state.componentData[key].class = classNames;

@@ -10,6 +10,7 @@ export interface NodeDeclaration {
   id: string;
   class: string[];
   style: Record<string, any>;
+  props: Record<string, any>;
   children: TreeKey[];
   componentName: string;
   parentId: string;
@@ -53,7 +54,15 @@ export type EditorMutation = {
   ) => void;
   updateStyle: (
     state: EditorState,
-    { key, style }: { key?: TreeKey; style: any }
+    { key, style }: { key?: TreeKey; style: Record<string, any> }
+  ) => void;
+  deleteStyleProperty: (
+    state: EditorState,
+    { key, prop }: { key?: TreeKey; prop: string }
+  ) => void;
+  updateProps: (
+    state: EditorState,
+    { key, props }: { key?: TreeKey; props: Record<string, any> }
   ) => void;
   updateClass: (
     state: EditorState,

@@ -3,8 +3,7 @@ import HTMLPlugin from "prettier/esm/parser-html.mjs";
 
 import { NodeDeclaration, TreeKey } from "../store/type";
 import { ROOT_ID, isHTMLTag } from './helper';
-import { renderJSXToString } from './renderJSXToString';
-import widgetCenter from './widgets/index';
+import { WidgetBuilder } from './widgets/WidgetBuilder';
 
 type NodeTree = {
   componentName: string;
@@ -40,8 +39,7 @@ function generateCode(data: NodeTree[]) {
   data.forEach(item => {
     const { componentName, className, style, children = [] } = item;
     if (componentName && !isHTMLTag(componentName)) {
-      const Component = widgetCenter.get(componentName).template || 'div'
-      const jsxCode = renderJSXToString(Component)
+      const jsxCode = WidgetBuilder.get(componentName).templateString
       code += '\n' + jsxCode
       return
     }

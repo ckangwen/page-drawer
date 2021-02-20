@@ -1,6 +1,6 @@
 <template>
   <el-aside class="sitting-aside">
-    <el-tabs v-model="tabName" type="border-card" class="tabs">
+    <el-tabs :value="activeTabName" @input="onTabNameChange" type="border-card" class="tabs">
       <el-tab-pane name="0" class="tab-pane">
         <span slot="label"> <i class="el-icon-date"></i> 样式 </span>
         <schema-form
@@ -15,7 +15,11 @@
       </el-tab-pane>
       <el-tab-pane name="1" class="tab-pane">
         <span slot="label"> <i class="el-icon-date"></i> 属性 </span>
-        <el-button>添加子节点</el-button>
+        <schema-form
+          :formProps="{ 'label-position': 'top' }"
+          v-model="componentSettingValue"
+          :schema="componentSettingSchema"
+        ></schema-form>
       </el-tab-pane>
     </el-tabs>
   </el-aside>
@@ -28,16 +32,16 @@ import {
   useNamespacedMutations,
   useNamespacedState
 } from "vuex-composition-helpers";
-import { AtomicClassNames } from "@/libs";
-// import StyleFormWidget from "@/components/StyleFormWidget.vue";
+import { AtomicClassNames, isHTMLTag, TABNAMES } from "@/libs";
 import StyleFormWidget from "@/components/StyleProperty/Style.vue";
-import { AppState, EditorMutation, EditorState } from "@/store/type";
+import { AppMutations, AppState, EditorMutation, EditorState } from "@/store/type";
+import { WidgetBuilder } from "@/libs/widgets/WidgetBuilder";
 
 export default defineComponent({
   name: "Setting",
   components: {
     StyleFormWidget,
-    SchemaForm
+    SchemaForm,
   },
   setup() {
     const { currentUuid } = useNamespacedState<EditorState>("editor", [
@@ -48,19 +52,40 @@ export default defineComponent({
       "currentComponent"
     ]);
 
-    const { updateClass, updateStyle } = useNamespacedMutations<EditorMutation>(
+    const { updateClass, updateStyle, updateProps } = useNamespacedMutations<EditorMutation>(
       "editor",
-      ["updateClass", "updateStyle"]
+      ["updateClass", "updateStyle", "updateProps"]
     );
 
     const { activeTabName } = useNamespacedState<AppState>("app", [
       "activeTabName"
     ]);
+    const {
+      setActiveTabName
+    } = useNamespacedMutations<AppMutations>('app', [
+      "setActiveTabName"
+    ])
+    const onTabNameChange = (val: TABNAMES) => {
+      setActiveTabName(val)
+    }
 
-    const tabName = ref(activeTabName.value);
+    const componentSettingSchema = ref({})
+    const componentSettingValue = ref({})
     watch(activeTabName, val => {
-      tabName.value = val;
+      if (val == TABNAMES['ATTRIBUTE']) {
+        const name = currentComponent.value.componentName
+        if (name && !isHTMLTag(name)) {
+          componentSettingSchema.value = WidgetBuilder.getWidgetSetting(name)
+        }
+      }
     });
+    watch(componentSettingValue, () => {
+      if (currentUuid.value) {
+        updateProps({
+          props: componentSettingValue.value
+        })
+      }
+    }, { deep: true, immediate: true })
 
     const schema = ref({
       class: {
@@ -85,7 +110,7 @@ export default defineComponent({
       style: {}
     });
     const schemaFormWidgets = {
-      style: StyleFormWidget
+      style: StyleFormWidget,
     };
     const submitForm = () => {
       const val = schemaFormValue.value;
@@ -110,7 +135,10 @@ export default defineComponent({
       schemaFormValue.value.style = currentComponent.value.style;
     });
     return {
-      tabName,
+      activeTabName,
+      onTabNameChange,
+      componentSettingValue,
+      componentSettingSchema,
       schema,
       schemaFormValue,
       schemaFormWidgets,

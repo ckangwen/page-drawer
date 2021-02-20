@@ -1,6 +1,7 @@
+import { WidgetBuilder } from './WidgetBuilder';
 const Card = (context: any) => {
   return (
-    <div {...context.data} {...context.props}>
+    <div {...(context.data || {})} {...(context.props || {})}>
       <el-card bodyStyle={{ padding: 0 }}>
         <img
           src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
@@ -20,9 +21,17 @@ const Card = (context: any) => {
   );
 };
 
-export default {
-  name: "card",
-  template: Card,
-  title: "卡片",
-  icon: "el-icon-plus"
-};
+const settings = {
+  img: {
+    title: 'img',
+    type: 'string',
+    default: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
+  }
+}
+
+WidgetBuilder.registerWidget(Card, {
+  name: 'card',
+  title: '卡片',
+  icon: 'el-icon-s-help',
+  settings
+})

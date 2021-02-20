@@ -1,6 +1,7 @@
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from '@vue/composition-api';
 import { VNode } from "vue/types/umd";
 import {
+  useNamespacedGetters,
   useNamespacedMutations,
   useNamespacedState
 } from "vuex-composition-helpers";
@@ -13,8 +14,7 @@ import {
 import styles from "./renderer.module.scss";
 import { ROOT_ID } from "@/libs";
 import { isHTMLTag } from '../libs/helper';
-import widgetCenter from '../libs/widgets/index';
-
+import { WidgetBuilder } from '../libs/widgets/WidgetBuilder';
 type Props = {
   keys: TreeKey[];
 };
@@ -29,6 +29,7 @@ export default defineComponent({
       "componentData",
       "mode"
     ]);
+    const { currentComponent } = useNamespacedGetters('editor', ["currentComponent"])
     const { setHoveredUuid, setCurrentUuid } = useNamespacedMutations<
       EditorMutation
     >("editor", ["setHoveredUuid", "setCurrentUuid"]);
@@ -66,6 +67,7 @@ export default defineComponent({
 
     return {
       componentData,
+      currentComponent,
       onClick,
       onDblclick,
       onMouseenter,
@@ -85,7 +87,7 @@ export default defineComponent({
         const style = node[k].style;
         let ComponentName: any = node[k].componentName || "div";
         if(!isHTMLTag(ComponentName)) {
-          ComponentName = widgetCenter.get(ComponentName).template || "div"
+          ComponentName = WidgetBuilder.getTemplate(ComponentName)
         }
         let children: VNode[] = [];
         const res = getNodes(node, node[k].children) || [];
@@ -98,6 +100,8 @@ export default defineComponent({
           delete style.height;
         }
 
+        const props = this.currentComponent ? this.currentComponent.props : {}
+
         return (
           <ComponentName
             class={(classNames || []).join(" ")}
@@ -106,6 +110,10 @@ export default defineComponent({
               id: node[k].id,
               "data-key": k
             }}
+            props={{
+              ...(this.currentComponent ? this.currentComponent.props : {})
+            }}
+            { ...props }
             onClick={(e: MouseEvent) => this.onClick(e, node[k])}
             onDblclick={(e: MouseEvent) => this.onDblclick(e, node[k])}
             onMouseenter={(e: MouseEvent) => this.onMouseenter(e, node[k])}

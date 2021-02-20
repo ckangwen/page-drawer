@@ -26,7 +26,7 @@ import {
 import Renderer from "@/components/Renderer";
 import SchemaForm from "@ckangwen/schema-form";
 import StyleFormWidget from "@/components/StyleFormWidget.vue";
-import { ROOT_ID as _ROOT_ID } from "@/libs";
+import { getInitialComponentData, ROOT_ID as _ROOT_ID } from "@/libs";
 import randomColor from "randomcolor";
 export default defineComponent({
   name: "AppMain",
@@ -147,14 +147,7 @@ export default defineComponent({
       const width = Math.abs(e.clientX - startClient.value.x);
       const height = Math.abs(e.clientY - startClient.value.y);
 
-      const domInfo = {
-        id: "",
-        class: [],
-        style: {},
-        children: [],
-        componentName: "div",
-        parentId: ""
-      };
+      const domInfo = getInitialComponentData()
 
       const uuid = shortid.generate();
       setCurrentUuid(uuid);

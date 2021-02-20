@@ -38,10 +38,10 @@ import {
 import SchemaForm from "@ckangwen/schema-form";
 
 import Codemirror from "@/components/Codemirror.vue";
-import widgetCenter from "@/libs/widgets";
 import { AppMutations, AppState, EditorMutation, EditorState } from "@/store/type";
 import { generateFormattedCode } from "@/libs";
 import { saveAs } from 'file-saver'
+import { WidgetBuilder } from '@/libs/widgets/WidgetBuilder';
 
 export default defineComponent({
   name: "Bottom",
@@ -54,9 +54,9 @@ export default defineComponent({
       "editor",
       ["currentUuid", "componentData"]
     );
-    const { updateComponentName } = useNamespacedMutations<EditorMutation>(
+    const { updateComponentName, deleteStyleProperty } = useNamespacedMutations<EditorMutation>(
       "editor",
-      ["updateComponentName", "updateClass", "updateStyle"]
+      ["updateComponentName", "updateClass", "updateStyle", "deleteStyleProperty"]
     );
 
     const {
@@ -80,9 +80,13 @@ export default defineComponent({
     const onDrawerVisibleChange = (val: boolean) => {
       setWidgetDrawerVisible(val)
     }
-    const list = widgetCenter.widgetList;
+    const list = WidgetBuilder.widgetList;
 
     const onSelectWidget = (item: any) => {
+      deleteStyleProperty({
+        key: currentUuid.value,
+        prop: 'background'
+      })
       updateComponentName({
         key: currentUuid.value,
         componentName: item.name,

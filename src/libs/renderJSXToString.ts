@@ -1,6 +1,3 @@
-// import HTMLPrettier from "prettier/esm/standalone";
-// import HTMLPlugin from "prettier/esm/parser-html.mjs";
-
 type NodeTree = {
   componentName: string;
   componentProps: Record<string, any>;

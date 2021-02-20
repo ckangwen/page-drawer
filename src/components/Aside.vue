@@ -1,7 +1,9 @@
 <template>
   <el-aside class="aside" :width="width + 'px'">
     <div class="trigger" @click="triggleMode">
-      <span :class="stateIcon"></span>
+      <el-tooltip class="item" effect="dark" :content=" triggleMode === 'edit' ? '编辑模式' : '只读模式' " placement="top-start">
+        <span :class="stateIcon"></span>
+      </el-tooltip>
     </div>
     <el-tabs
       class="tab"

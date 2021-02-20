@@ -61,3 +61,15 @@ const HTMLTag = [
 export const isHTMLTag = (tag: string) => {
   return HTMLTag.indexOf(tag) > -1
 }
+
+export const getInitialComponentData: () => NodeDeclaration = () => {
+  return {
+    id: "",
+    class: [],
+    style: {},
+    children: [],
+    props: {},
+    componentName: "div",
+    parentId: ""
+  }
+}
