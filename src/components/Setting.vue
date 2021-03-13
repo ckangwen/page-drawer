@@ -1,7 +1,7 @@
 <template>
   <el-aside class="sitting-aside">
     <el-tabs :value="activeTabName" @input="onTabNameChange" type="border-card" class="tabs">
-      <el-tab-pane name="0" class="tab-pane">
+      <el-tab-pane name="STYLE" class="tab-pane">
         <span slot="label"> <i class="el-icon-date"></i> 样式 </span>
         <schema-form
           :formProps="{ 'label-position': 'top' }"
@@ -13,7 +13,7 @@
           >提交</el-button
         >
       </el-tab-pane>
-      <el-tab-pane name="1" class="tab-pane">
+      <el-tab-pane name="ATTRIBUTE" class="tab-pane">
         <span slot="label"> <i class="el-icon-date"></i> 属性 </span>
         <schema-form
           :formProps="{ 'label-position': 'top' }"
@@ -34,14 +34,16 @@ import {
 } from "vuex-composition-helpers";
 import { AtomicClassNames, isHTMLTag, TABNAMES } from "@/libs";
 import StyleFormWidget from "@/components/StyleProperty/Style.vue";
+import ObjectArray from "@/components/SchemaFormWidgets/ObjectArray.vue";
 import { AppMutations, AppState, EditorMutation, EditorState } from "@/store/type";
-import { WidgetBuilder } from "@/libs/widgets/WidgetBuilder";
+import { WidgetBuilder } from "@/libs/WidgetBuilder";
 
 export default defineComponent({
   name: "Setting",
   components: {
     StyleFormWidget,
     SchemaForm,
+    ObjectArray
   },
   setup() {
     const { currentUuid } = useNamespacedState<EditorState>("editor", [
@@ -80,6 +82,7 @@ export default defineComponent({
       }
     });
     watch(componentSettingValue, () => {
+      console.log('componentSettingValue', componentSettingValue.value)
       if (currentUuid.value) {
         updateProps({
           props: componentSettingValue.value
@@ -111,6 +114,7 @@ export default defineComponent({
     });
     const schemaFormWidgets = {
       style: StyleFormWidget,
+      ObjectArray
     };
     const submitForm = () => {
       const val = schemaFormValue.value;

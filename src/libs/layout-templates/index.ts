@@ -10,7 +10,7 @@ export type LayoutTemplateType = {
 const layoutTemplates: Record<string, LayoutTemplateType> = {
   basic: {
     title: 'Demo',
-    template: BasicTemplate
+    template: BasicTemplate as any
   }
 }
 

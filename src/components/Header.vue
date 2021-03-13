@@ -1,13 +1,23 @@
 <template>
   <el-header class="header">
-    <el-form inline size="small">
-      <el-form-item label="width">
-        <el-input style="width: 100px" v-model="size.width"></el-input>
-      </el-form-item>
-      <el-form-item label="height">
-        <el-input style="width: 100px" v-model="size.height"></el-input>
-      </el-form-item>
-    </el-form>
+    <div class="header__left">
+      <el-form inline size="small">
+        <el-form-item label="width">
+          <el-input style="width: 100px" v-model="size.width"></el-input>
+        </el-form-item>
+        <el-form-item label="height">
+          <el-input style="width: 100px" v-model="size.height"></el-input>
+        </el-form-item>
+      </el-form>
+      <div class="header__left-extra">
+        <div class="item">
+          <span class="iconfont c-mobile" @click="setMobileSize"></span>
+        </div>
+        <div class="item">
+          <span class="iconfont c-desktop" @click="setDesktopSize"></span>
+        </div>
+      </div>
+    </div>
     <div class="action">
       <div class="action-item" @click="clear">
         <span class="iconfont c-clear"></span>
@@ -64,6 +74,18 @@ export default defineComponent({
     const clear = () => {
       clearComponentData()
     }
+    const setMobileSize = () => {
+      setCanvasSize({
+        width: "365px",
+        height: "100%"
+      })
+    }
+    const setDesktopSize = () => {
+      setCanvasSize({
+        width: "100%",
+        height: "100%"
+      })
+    }
 
 
     return {
@@ -71,6 +93,8 @@ export default defineComponent({
       showCode,
       showStructure,
       clear,
+      setMobileSize,
+      setDesktopSize
     };
   }
 });
@@ -81,6 +105,23 @@ export default defineComponent({
   align-items: center;
   justify-content: space-between;
   height: 100%;
+  &__left {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    &-extra {
+      display: flex;
+      margin-bottom: 18px;
+
+      .item {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        cursor: pointer;
+      }
+    }
+  }
 }
 .action {
   display: flex;

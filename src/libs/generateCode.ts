@@ -3,7 +3,7 @@ import HTMLPlugin from "prettier/esm/parser-html.mjs";
 
 import { NodeDeclaration, TreeKey } from "../store/type";
 import { ROOT_ID, isHTMLTag } from './helper';
-import { WidgetBuilder } from './widgets/WidgetBuilder';
+import { WidgetBuilder } from './WidgetBuilder';
 
 type NodeTree = {
   componentName: string;

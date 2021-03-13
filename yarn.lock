@@ -870,10 +870,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@ckangwen/schema-form@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/@ckangwen/schema-form/-/schema-form-1.0.8.tgz#ea8bc9cb3624b6c4ff0cbe00e207b60e85a7e41e"
-  integrity sha512-Zh1YIM2Umb+jFxZTNAIrdNYXEbO7mHnZbj2RdRO8Dq8Bxpeu12lvN3S3AcY1gJXOpouMqpB6QTVMTtUWWecKbg==
+"@ckangwen/schema-form@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.npm.taobao.org/@ckangwen/schema-form/download/@ckangwen/schema-form-1.0.9.tgz#dbecab638ad8c210298982cb5bd8078c0d0b0dcf"
+  integrity sha1-2+yrY4rYwhApiYLLW9gHjA0LDc8=
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"

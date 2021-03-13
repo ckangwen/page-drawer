@@ -1,6 +1,9 @@
 import { FunctionalComponentOptions } from 'vue'
-import { renderJSXToString } from '../renderJSXToString';
-import TagSettings from './tag'
+import { renderJSXToString } from './renderJSXToString';
+import TagConfig from './widgets/Tag'
+import CellConfig from './widgets/Cell'
+import CheckboxConfig from './widgets/Checkbox'
+import ButtonConfig from './widgets/Button'
 
 export type WidgetSetting = {
   name: string;
@@ -56,9 +59,28 @@ export class WidgetBuilder {
 }
 
 
-WidgetBuilder.registerWidget(TagSettings.template, {
+WidgetBuilder.registerWidget(TagConfig.template, {
   name: 'tag',
   title: '标签',
-  icon: 'el-icon-platform-eleme',
-  settings: TagSettings.settings,
+  icon: 'iconfont c-tag',
+  settings: TagConfig.settings,
+})
+
+WidgetBuilder.registerWidget(CellConfig.template, {
+  name: 'cell',
+  title: '单元格',
+  icon: 'iconfont c-cell',
+  settings: CellConfig.settings,
+})
+WidgetBuilder.registerWidget(CheckboxConfig.template, {
+  name: 'checkbox',
+  title: '复选框',
+  icon: 'iconfont c-checkbox',
+  settings: CheckboxConfig.settings,
+})
+WidgetBuilder.registerWidget(ButtonConfig.template, {
+  name: 'button',
+  title: '按钮',
+  icon: 'iconfont c-button',
+  settings: ButtonConfig.settings,
 })

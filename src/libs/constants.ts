@@ -1,4 +1,4 @@
 export enum TABNAMES {
-  "STYLE",
-  "ATTRIBUTE"
+  STYLE = "STYLE",
+  ATTRIBUTE = "ATTRIBUTE"
 }

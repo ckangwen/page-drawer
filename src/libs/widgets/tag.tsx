@@ -1,60 +1,68 @@
 const settings = {
-  text: {
-    title: "text",
-    type: "string",
-    default: "TEXT",
-  },
   type: {
-    title: "type",
     type: "string",
+    title: "tag类型",
     "ui-widget": "select",
-    enums: ["success", "info", "warning", "danger"],
-  },
-  closable: {
-    title: "closable",
-    type: "boolean",
-  },
-  hit: {
-    title: "hit",
-    type: "boolean",
-  },
-  color: {
-    title: "color",
-    type: "string",
+    enums: ["primary", "success", "danger", "warning"],
   },
   size: {
-    title: "size",
     type: "string",
+    title: "大小",
     "ui-widget": "select",
-    enums: ["medium", "small", "mini"],
+    enums: ["large", "medium"],
   },
-  effect: {
-    title: "effect",
+  color: {
     type: "string",
-    "ui-widget": "select",
-    enums: ["dark", "light", "plain"],
-    default: "light",
+    title: "标签颜色",
+  },
+  plain: {
+    type: "boolean",
+    title: "是否为空心样式",
+    default: true,
+  },
+  round: {
+    type: "boolean",
+    title: "是否为圆角样式",
+    default: true,
+  },
+  mark: {
+    type: "boolean",
+    title: "是否为标记样式",
+    default: true,
+  },
+  "text-color": {
+    type: "string",
+    title: "文本颜色，优先级高于 color 属性",
+    default: "white",
+  },
+  closeable: {
+    type: "boolean",
+    title: "是否为可关闭标签",
+    default: true,
   },
 };
 
-const Tag = (context: any) => {
-  let props: Record<string, any> = {}
+const Component = (context: any) => {
+  let props: Record<string, any> = {};
   if (context.data) {
     props = Object.assign(
       {},
       {
-        class: context.data.class || '',
+        class: context.data.class || "",
         style: context.data.style || {},
       },
       context.data.attrs,
-      context.data.props,
+      context.data.props
     );
   }
-  console.log('props', props)
-  return <el-tag props={props} {...props}>{props.text || "default"}</el-tag>;
+  return (
+    <van-tag props={props} {...props}>
+      {props.text || "default"}
+    </van-tag>
+  );
 };
 
 export default {
-  template: Tag,
+  template: Component,
   settings,
 };

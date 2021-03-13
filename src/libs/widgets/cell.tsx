@@ -20,12 +20,12 @@ const CellGroupSettings = {
   cellSettings: {
     title: 'cell settings',
     type: 'ObjectArray',
-    property: CellSettings,
+    properties: CellSettings,
     default: []
   }
 }
 
-const Cell = (context: any) => {
+const Component = (context: any) => {
   let props: Record<string, any> = {}
   if (context.data) {
     props = Object.assign(
@@ -38,20 +38,23 @@ const Cell = (context: any) => {
       context.data.props,
     );
   }
-  const { cellSettings = [] } = props
+  const { cellSettings = [], style = {} } = props
+  console.log(props)
   return (
-    <van-cell-group>
-      {
-        cellSettings.map((item: Record<string, any>) => {
-          return (
-            <van-cell { ...item } />
-          )
-        } )
-      }
-    </van-cell-group>
+    <div style={style}>
+      <van-cell-group>
+        {
+          cellSettings.map((item: Record<string, any>) => {
+            return (
+              <van-cell props={item} { ...item } />
+            )
+          } )
+        }
+      </van-cell-group>
+    </div>
   )
 };
 export default {
-  template: Cell,
+  template: Component,
   settings: CellGroupSettings,
 };

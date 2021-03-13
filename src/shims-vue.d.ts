@@ -36,3 +36,8 @@ declare module "prettier/esm/parser-html.mjs" {
   const content: any;
   export default content;
 }
+
+declare module "*.json" {
+  const content: any;
+  export default content;
+}

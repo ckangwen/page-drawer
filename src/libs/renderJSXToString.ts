@@ -4,12 +4,13 @@ type NodeTree = {
   children: NodeTree[];
 };
 
-function generateCode(data: NodeTree) {
+function generateCode(data?: NodeTree) {
+  if (!data) return ''
   if (typeof data === "string") {
     return data;
   }
 
-  const { componentName, componentProps, children = [] } = data;
+  const { componentName, componentProps = {}, children = [] } = data;
   // componentProps: class style attrs props domProps on directives slot ref scopedSlots
 
   let code = "";
@@ -81,8 +82,10 @@ export function renderJSXToString(
   }
   context.data = context.data || {};
   context.props = context.props || {};
-  const renderWrapperFunctionStr = `return function renderWrapperFn( _vue_babel_helper_vue_jsx_merge_props__WEBPACK_IMPORTED_MODULE_0___default) { return ${renderFnStr} }`;
+  const renderWrapperFunctionStr = `return function _renderWrapperFn( _vue_babel_helper_vue_jsx_merge_props__WEBPACK_IMPORTED_MODULE_0___default) { return ${renderFnStr} }`;
+  console.log(renderWrapperFunctionStr )
   const fun = new Function(renderWrapperFunctionStr);
+  console.log(fun )
   const renderWrapperFn = fun();
   const render = renderWrapperFn(vueBabelMergePropsHeplerMockFn);
 

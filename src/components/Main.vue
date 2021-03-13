@@ -197,7 +197,8 @@ export default defineComponent({
 .draw-content {
   position: relative;
   width: 100%;
-  height: calc(100% - 50px);
+  height: 100%;
+  margin: 0 auto;
   box-sizing: border-box;
   border: 1px solid #dcdfe6;
   border-radius: 10px;

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-collapse v-model="activeNames">
-      <template v-for="(item, index) in models">
+      <template v-for="(item, index) in currentValue">
         <el-collapse-item :key="index" :name="index">
           <template slot="title">
             {{ `Item ${index + 1}`
@@ -24,13 +24,15 @@
             <el-switch
               class="input-control"
               v-else-if="child.type === 'boolean'"
-              v-model="item[child.property]"
+              :value="item[child.property]"
+              @input="(val) => onValueChange(index, child.property, val)"
               :size="size"
             ></el-switch>
             <el-checkbox-group
               class="input-control"
               v-else-if="child.type === 'array' && !child['ui-widget']"
-              v-model="item[child.property]"
+              :value="item[child.property]"
+              @input="(val) => onValueChange(index, child.property, val)"
               :size="size"
             >
               <el-checkbox
@@ -45,7 +47,8 @@
               v-else-if="
                 child.type === 'array' && child['ui-widget'] === 'select'
               "
-              v-model="item[child.property]"
+              :value="item[child.property]"
+              @input="(val) => onValueChange(index, child.property, val)"
               :size="size"
             >
               <el-option
@@ -79,8 +82,8 @@
 </template>
 <script lang="ts">
 import SchemaForm from "@ckangwen/schema-form";
-import { computed, defineComponent, ref } from "@vue/composition-api";
-
+import { computed, defineComponent, ref, watch } from "@vue/composition-api";
+import Vue from 'vue';
 export default defineComponent({
   name: "ObjectArray",
   components: {
@@ -88,24 +91,39 @@ export default defineComponent({
   },
   props: {
     schema: Object,
+    value: Array
   },
   setup(props, ctx) {
     const { schema = {} } = props;
-    const { properties = {}, width = "80px", size = "small" } = schema;
+    const { properties = {}, width = "", size = "small" } = schema;
     const activeNames = ref([0]);
 
-    const models = ref<Record<string, any>[]>([{}]);
+    let val: any[] = []
+    if (!props.value || ( props.value && props.value.length === 0 )) {
+      val = [{}]
+    } else {
+      val = props.value?.map(item => {
+        if (item && typeof item === 'object') return item
+        else return {}
+      }) || [{}]
+    }
+
+    const currentValue = ref<Record<string, any>[]>(val);
     const onAdd = () => {
-      models.value.push({});
+      currentValue.value.push({});
     };
+    watch(currentValue, (val) => {
+      ctx.emit("input", val);
+    }, { immediate: true, deep: true })
+
     const onConfirm = () => {
-      ctx.emit("input", models.value);
+      ctx.emit("input", currentValue.value);
     };
 
     const forms = computed(() => {
       return Object.keys(properties).map((k) => {
         if (properties[k].default || properties[k].default === false) {
-          models.value.forEach((item) => {
+          currentValue.value.forEach((item) => {
             item[k] = properties[k].default;
           });
         }
@@ -145,9 +163,15 @@ export default defineComponent({
       }
       return [];
     };
+
+    const onValueChange = (index: number, key: string, val: any) => {
+      Vue.set(currentValue.value[index], key, val)
+    }
+    const nice = ref([true, true])
     return {
+      nice,
       activeNames,
-      models,
+      currentValue,
       onAdd,
       onConfirm,
       width,
@@ -155,6 +179,7 @@ export default defineComponent({
       size,
       forms,
       transformEnums,
+      onValueChange
     };
   },
 });
@@ -174,6 +199,7 @@ export default defineComponent({
     line-height: 40px;
     padding: 0 12px 0 0;
     box-sizing: border-box;
+    min-width: 80px;
   }
   .input-control {
     line-height: 40px;

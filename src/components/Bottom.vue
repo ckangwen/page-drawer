@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-drawer title="我是标题" :visible="widgetDrawerVisible" @update:visible="onDrawerVisibleChange" direction="ltr">
-      <div>
+      <div class="widget-list">
         <div
           v-for="(item, index) in list"
           :key="index"
@@ -39,9 +39,9 @@ import SchemaForm from "@ckangwen/schema-form";
 
 import Codemirror from "@/components/Codemirror.vue";
 import { AppMutations, AppState, EditorMutation, EditorState } from "@/store/type";
-import { generateFormattedCode } from "@/libs";
+import { generateFormattedCode, TABNAMES } from "@/libs";
 import { saveAs } from 'file-saver'
-import { WidgetBuilder } from '@/libs/widgets/WidgetBuilder';
+import { WidgetBuilder } from '@/libs/WidgetBuilder';
 
 export default defineComponent({
   name: "Bottom",
@@ -68,13 +68,14 @@ export default defineComponent({
       [
         "codeDialogVisible",
         "widgetDrawerVisible",
-        "codeActionType"
+        "codeActionType",
       ]
     );
 
-    const { setCodeDialogVisible, setWidgetDrawerVisible } = useNamespacedMutations<AppMutations>("app", [
+    const { setCodeDialogVisible, setWidgetDrawerVisible, setActiveTabName } = useNamespacedMutations<AppMutations>("app", [
       "setCodeDialogVisible",
-      "setWidgetDrawerVisible"
+      "setWidgetDrawerVisible",
+      "setActiveTabName"
     ]);
 
     const onDrawerVisibleChange = (val: boolean) => {
@@ -91,6 +92,7 @@ export default defineComponent({
         key: currentUuid.value,
         componentName: item.name,
       });
+      setActiveTabName(TABNAMES['ATTRIBUTE'])
       setWidgetDrawerVisible(false)
     };
 
@@ -155,14 +157,21 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-.item {
+.widget-list {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 
-  &:hover {
-    background: rgb(0 0 0 / 10%);
+  .item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    box-sizing: border-box;
+    height: 100px;
+
+    &:hover {
+      background: rgb(0 0 0 / 10%);
+    }
   }
 }
 .code-bottom {

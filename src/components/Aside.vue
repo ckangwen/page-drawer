@@ -1,7 +1,7 @@
 <template>
   <el-aside class="aside" :width="width + 'px'">
     <div class="trigger" @click="triggleMode">
-      <el-tooltip class="item" effect="dark" :content=" triggleMode === 'edit' ? '编辑模式' : '只读模式' " placement="top-start">
+      <el-tooltip class="item" effect="dark" :content=" mode === 'edit' ? '编辑模式' : '只读模式' " placement="top-start">
         <span :class="stateIcon"></span>
       </el-tooltip>
     </div>
@@ -164,6 +164,7 @@ export default defineComponent({
     }
 
     return {
+      mode,
       stateIcon,
       triggleMode,
       tabName,

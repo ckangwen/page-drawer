@@ -14,7 +14,7 @@ import {
 import styles from "./renderer.module.scss";
 import { ROOT_ID } from "@/libs";
 import { isHTMLTag } from '../libs/helper';
-import { WidgetBuilder } from '../libs/widgets/WidgetBuilder';
+import { WidgetBuilder } from '../libs/WidgetBuilder';
 type Props = {
   keys: TreeKey[];
 };
